@@ -1,0 +1,180 @@
+
+<style type="text/css">
+.table td{border:1px solid #ddd;}
+.voteTitle{
+	padding: 20px;
+    padding-left: 50px;
+    border: 1px solid #cccccc;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-box-shadow:0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+    width:400px;
+    margin:0px auto;
+    background-image:-moz-linear-gradient(top,#ffffff,#f2f2f2);
+    background-image:-webkit-gradient(linear,left top,bottom,from(#ffffff),to(#f2f2f2));
+}
+</style>
+<script type="text/javascript">
+
+	function checkForm(){
+		/*
+		var username=document.getElementById("username").value;
+		var nikename=document.getElementById("nikename").value;
+		var usernumber=document.getElementById("usernumber").value;
+		var sex=document.getElementById("sex").value;
+		var position=document.getElementById("position").value;
+		var description=document.getElementById("description").value;
+		var tel=document.getElementById("tel").value;
+		if(username==""){
+			document.getElementById("error").innerHTML="请填写用户名";
+			return false;
+		}else if(nikename==""){
+			document.getElementById("error").innerHTML="请填写姓名";
+			return false;
+		}else if (usernumber==""){
+			document.getElementById("error").innerHTML="请填写学号";
+			return false;
+		}else if (sex==""){
+			document.getElementById("error").innerHTML="请选择性别";
+			return false;
+		}else if (tel==""){
+			document.getElementById("error").innerHTML="请填写电话";
+			return false;
+		}else if (position==""){
+			document.getElementById("error").innerHTML="请填写职务";
+			return false;
+		}else if (description==""){
+			document.getElementById("error").innerHTML="请填写负责内容";
+			return false;
+		}
+		*/
+		return true;
+	}
+
+	$(document).ready(function(){
+			$("ul li:contains(投票管理)").addClass("active");
+
+			$('.form_date').datetimepicker({
+			    language:  'en',
+			    weekStart: 1,
+			    todayBtn:  1,
+				autoclose: 1,
+				todayHighlight: 1,
+				startView: 2,
+				minView: 1,
+				forceParse: 1,
+				initialDate:new Date(),
+				pickerPosition:'right'
+			});
+
+			console.log($('#choose').val()+"1");
+			$("#choose").change(function(){
+			console.log($('#choose').val()+"2");
+		  	//alert($('#choose').val()+"8");
+			$.post("{:U('getData')}",
+		    {
+		      type:"studentInfo",
+		      userId:$('#choose').val()
+		    },
+		    function(data,status){
+		      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+		      if(status=='success'){
+		      	$("#userId").val(data['userId']);
+		      	$("#classId").val(data['classId']);
+		      	$("#username").val(data['username']);
+		      	$("#nikename").val(data['nikename']);
+		      	$("#usernumber").val(data['usernumber']);
+		      	$("#sex").val(data['sex']);
+		      	$("#position").val(data['position']);
+		      	$("#description").val(data['description']);
+		      	$("#tel").val(data['tel']);
+
+		      }
+		    },'json');
+		});
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		对{$vote.title}进行投票
+		</div>
+		<form action="__CONTROLLER__/voting" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+				<php>
+					//print_r($vote);
+				</php>
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+				<div class='main_bd' align="left">
+					<input type="hidden" id="voteId" name="voteId" value="{$vote.voteId }"/>
+					<div class ="vote">
+						<table align="">
+							<tr><td>
+							<div class="voteTitle">
+							<table>
+								<tr>
+									<td><font color="red">*</font>投票名称：</td>
+									<td><label>{$vote.title } </label></td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>开始时间：</td>
+									<td>
+		                    			<label id="startTime" name="startTime" placeholder="起始日期">{$vote.startTime}</label>
+		               				</td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>截止时间：</td>
+									<td>
+										<label id="endTime" name="endTime" placeholder="截止日期" >{$vote.endTime}</label>
+		               				</td>
+								</tr>
+							</table></div></td></tr>
+							<volist name="vote[questions]" id="question" key='kq'>
+							<tr><td>
+								<div id='question{$kq-1}' class="question"><table class="table">
+									<tr>
+										<th colspan="2">
+											{$kq}：{$question.title }
+										</th>
+									</tr>
+									
+									<volist name="question[options]" id="vo" key='ko'>
+										<if condition="$question[mode] eq 0">
+											<tr>
+												<td colspan="2">
+													<input name="questions[{$question.questionId }]" type="radio" value={$vo.optionId } />{$vo.content }
+												</td>
+											</tr>
+										<else />
+											<tr>
+												<td colspan="2">
+													<input name="options[{$vo.optionId}]" type="checkbox" value={$vo.optionId } />{$vo.content }
+												</td>
+											</tr>
+										</if>
+										
+									</volist>
+									</table>
+								</div></td></tr>
+							</volist>	
+							<tr><td colspan="2">
+					<div align="center">
+						<input type="submit" class="btn btn-primary" value="投票"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div></td></tr>
+						</table>
+						<br/>
+						<table align="left">
+							
+						</table>
+						
+					</div>
+					<div class = 'votequestions'>
+						
+					</div>
+				</div>
+			</div>
+		</form>
+</div>

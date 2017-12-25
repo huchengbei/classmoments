@@ -1,0 +1,151 @@
+
+<script type="text/javascript">
+	function checkForm(){
+		var username=document.getElementById("username").value;
+		var nikename=document.getElementById("nikename").value;
+		var usernumber=document.getElementById("usernumber").value;
+		var sex=document.getElementById("sex").value;
+		var position=document.getElementById("position").value;
+		var description=document.getElementById("description").value;
+		var tel=document.getElementById("tel").value;
+		if(username==""){
+			document.getElementById("error").innerHTML="请填写用户名";
+			return false;
+		}else if(nikename==""){
+			document.getElementById("error").innerHTML="请填写姓名";
+			return false;
+		}else if (usernumber==""){
+			document.getElementById("error").innerHTML="请填写学号";
+			return false;
+		}else if (sex==""){
+			document.getElementById("error").innerHTML="请选择性别";
+			return false;
+		}else if (tel==""){
+			document.getElementById("error").innerHTML="请填写电话";
+			return false;
+		}else if (position==""){
+			document.getElementById("error").innerHTML="请填写职务";
+			return false;
+		}else if (description==""){
+			document.getElementById("error").innerHTML="请填写负责内容";
+			return false;
+		}
+		return true;
+	}
+	
+	$(document).ready(function(){
+			$("ul li:contains(班级职委管理)").addClass("active");
+			console.log($('#choose').val()+"1");
+			$("#choose").change(function(){
+			console.log($('#choose').val()+"2");
+		  	//alert($('#choose').val()+"8");
+			$.post("{:U('getData')}",
+		    {
+		      type:"studentInfo",
+		      userId:$('#choose').val()
+		    },
+		    function(data,status){
+		      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+		      if(status=='success'){
+		      	$("#userId").val(data['userId']);
+		      	$("#classId").val(data['classId']);
+		      	$("#username").val(data['username']);
+		      	$("#nikename").val(data['nikename']);
+		      	$("#usernumber").val(data['usernumber']);
+		      	$("#sex").val(data['sex']);
+		      	$("#position").val(data['position']);
+		      	$("#description").val(data['description']);
+		      	$("#tel").val(data['tel']);
+
+		      }
+		    },'json');
+		});
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		<if condition="($student.userId neq null) OR ($student.userId neq '')">
+			修改班委信息
+		<else /> 
+			添加班委
+		</if>
+		</div>
+		<form action="__CONTROLLER__/save" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+				<input type="hidden" id="userId" name="userId" value="{$student.userId }"/>
+				<input type="hidden" id="classId" name="classId" value="{$student.classId }"/>
+					<table align="center">
+						<tr>
+							<td><font color="red">*</font>请选择成员：</td>
+							<td>
+								<select id="choose" name="choose" style="width: 205px;">
+									<option value="" >请选择...</option>
+									<volist name="classMembers" id="classMember" key='k'>
+										<option value="{$classMember.userId}"
+											<if condition="$student[userId] eq $classMember[userId]">
+												selected
+											</if>
+											 >{$classMember.usernumber } {$classMember.nikename }
+											</option>
+									</volist>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>用户名：</td>
+							<td><input type="text" id="username"  name="username" value="{$student.username }"  style="margin-top:5px;height:30px;" readonly /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>姓名：</td>
+							<td><input type="text" id="nikename"  name="nikename" value="{$student.nikename}"  style="margin-top:5px;height:30px;" readonly /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>学号：</td>
+							<td><input type="text" id="usernumber"  name="usernumber" value="{$student.usernumber}"  style="margin-top:5px;height:30px;" readonly /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>性别：</td>
+							<td>
+								<select id="sex" name="sex" style="width: 90px;" disabled="true">
+								<!--
+									<eq name="student.sex" value="男">
+										<option id ='optionsex' value="男" selected>男</option>
+									</eq>
+									<eq name="student.sex" value="女">
+										<option  id ='optionsex' value="女" selected>女</option>
+									</eq>
+								-->
+									<option value=""></option>
+									<option value="男" 
+														<eq name="student.sex" value="男">selected</eq>
+														>男</option>
+									<option value="女" 
+														<eq name="student.sex" value="女">selected</eq>
+														>女</option>
+														
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>职务：</td>
+							<td><input type="text" id="position"  name="position" value="{$student.position }"  style="margin-top:5px;height:30px;" /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>负责内容：</td>
+							<td><input type="text" id="description"  name="description" value="{$student.description }"  style="margin-top:5px;height:30px;" /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>联系电话：</td>
+							<td><input type="text" id="tel"  name="tel" value="{$student.tel }"  style="margin-top:5px;height:30px;" /></td>
+						</tr>
+					</table>
+					<div align="center">
+						<input type="submit" class="btn btn-primary" value="保存"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div>
+			</div>
+		</form>
+</div>

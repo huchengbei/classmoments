@@ -1,0 +1,261 @@
+ <style type="text/css">
+  h1, h2, h3, h4 {
+    margin-top: 0px;
+  }
+  div.row {
+    margin-bottom: 10px;
+    padding: 5px 5px 5px 25px;
+  }
+  *.focus {
+    outline: none;
+  }
+  .floatLeft {
+    float: left;
+  }
+  .floatRight {
+    float: right;
+  }
+  .clear {
+    clear: both;
+  }
+  form {
+    padding: 20px;
+    padding-left: 50px;
+    border: 1px solid #cccccc;
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-box-shadow:0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+    width:400px;
+    margin:0px auto;
+    background-image:-moz-linear-gradient(top,#ffffff,#f2f2f2);
+    background-image:-webkit-gradient(linear,left top,bottom,from(#ffffff),to(#f2f2f2));
+  }
+  input {
+    border:1px solid #ccc;
+    font-size: 13pt;
+    padding: 0px 10px 5px 10px;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+  }
+  input[type=button] {
+    background-image: -moz-linear-gradient(top, #ffffff, #dfdfdf);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#dfdfdf));
+  }
+  input:focus {
+    -webkit-box-shadow:0 0 10px #ccc;
+    -moz-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 5px #ccc;
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+  #file {
+    width: 378px;
+  }
+  #progressIndicator {
+    font-size: 10pt;
+  }
+  #fileInfo {
+    font-size: 10pt;
+    font-style: italic;
+    color: #aaa;
+    margin-top: 10px;
+  }
+  #progressBar {
+    height: 14px;
+    border: 1px solid #cccccc;
+    display: none;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    background-image: -moz-linear-gradient(top, #66cc00, #4b9500);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#66cc00), to(#4b9500));
+    background-color: #4b9500;
+  }
+  #uploadResponse {
+    margin-top: 10px;
+    padding: 20px;
+    overflow: hidden;
+    display: none;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px #ccc;
+    background-image: -moz-linear-gradient(top, #ff9900, #c77801);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ff9900), to(#c77801));
+    background-color: #ff9900;
+  }
+</style>
+<script type="text/javascript">
+  function checkForm(){
+    var title=document.getElementById("username").value;
+    var description=document.getElementById("description").value;
+    var choose=document.getElementById("choose").value;
+    var startTime=document.getElementById("startTime").value;
+    var endTime=document.getElementById("endTime").value;
+    var tip=document.getElementById("tip").value;
+    if(title==""){
+      document.getElementById("error").innerHTML="请填写作业名称";
+      return false;
+    }else if(description==""){
+      document.getElementById("error").innerHTML="请填写作业详情";
+      return false;
+    }else if (choose==""){
+      document.getElementById("error").innerHTML="请选择学科分类";
+      return false;
+    }else if (startTime==""){
+      document.getElementById("error").innerHTML="请填写开始时间";
+      return false;
+    }else if (endTime==""){
+      document.getElementById("error").innerHTML="请填写结束时间";
+      return false;
+    }else if (tip==""){
+      document.getElementById("error").innerHTML="请填写注意详情";
+      return false;
+    }
+    return true;
+  }
+  
+  $(document).ready(function(){
+      $("ul li:contains(作业管理)").addClass("active");
+
+        //file 对象
+      var files = document.getElementById("file"),
+        //不支持File API的浏览器调用该接口，预览上传文件信息
+        validUrl = '__MODULE__/Works/fileMessage',
+        //上传文件处理接口
+        uploadUrl = '__MODULE__/Works/upload',
+        //不支持File API的浏览器调用该接口，显示文件上传进度
+        progressUrl = '__MODULE__/Works/uploadProgress',
+        //上传按钮
+        upload = document.getElementById('upload'),
+        //上传进度条
+        progressBar = document.getElementById('progressBar'),
+        //上传百分比
+        progressNumber = document.getElementById('progressNumber'),
+        //已上传文件大小
+        transferBytesInfo = document.getElementById('transferBytesInfo'),
+        //服务器端处理结果
+        uploadResponse = document.getElementById('uploadResponse');
+      $('#file').change(function(name,size,type){
+        //file 对象
+        progressBar.style.display = 'none';
+        progressNumber.style.display = 'none';
+        transferBytesInfo.style.display = 'none';
+        uploadResponse.style.display = 'none';
+        
+        var file = files.files[0];  
+        //alert(f.name);
+        var name = file.name;
+        var size;
+        var type=file.type;
+        //预览上传文件信息 
+        if(file.size>1024*1024){
+          size=""+ (file.size/1024/1024).toFixed(2)+ "MB";
+        }else{
+          size=""+(file.size/1024).toFixed(2) +"KB";
+        }
+        $('#fileName').text('文件名：' + name);
+        $('#fileSize').text('文件大小：' + size);
+        $('#fileType').text('文件类型：' + type);
+        //alert(JSON.stringify(f));
+      });
+
+      $('#upload').click(function(){
+        progressBar.style.display = 'none';
+        progressNumber.style.display = 'none';
+        transferBytesInfo.style.display = 'none';
+        uploadResponse.style.display = 'none';
+
+        var file = files.files[0];
+
+        var fd = new FormData();
+        fd.append("file", file);
+        // These extra params aren't necessary but show that you can include other data.
+        fd.append("taskId", "{$taskId}");
+        fd.append("accountnum", 123456);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '__CONTROLLER__/upload', true);
+        
+        xhr.upload.onprogress = function(e) {
+          if (e.lengthComputable) {
+            var percentComplete = (e.loaded / e.total) * 100;
+
+            progressBar.style.display = 'block';
+            progressNumber.style.display = 'block';
+            transferBytesInfo.style.display = 'block';
+            progressBar.style.width = '0px';
+            $('#progressNumber').text(percentComplete + '%');
+            progressBar.style.width = percentComplete * 3.55 + 'px';
+            $('#transferBytesInfo').text(args2);
+
+            console.log(percentComplete + '% uploaded');
+          }
+        };
+
+        xhr.onload = function() {
+          if (this.status == 200) {
+            var resp = JSON.parse(this.response);
+            //alert(JSON.stringify(JSON.parse(this.response)));
+            console.log('Server got:', resp);
+            //alert(resp.message);
+            $('#uploadResponse').html(resp.message);
+            uploadResponse.style.display = 'block';
+          };
+        };
+
+        xhr.send(fd);
+
+      });
+  });
+</script>
+<div class="data_list">
+    <div class="data_list_title">
+    <if condition="($task.taskId neq null) OR ($task.taskId neq '')">
+      修改作业
+    <else /> 
+      上传作业
+    </if>
+    </div>
+    <form id="form" enctype="multipart/form-data" method="post" action="__CONTROLLER__/upload">
+                        <div class="row">
+                          <label for="file">选择作业</label>
+                          <input id='file' type="file" name="file" id="file"/>
+                        </div>
+                        <div class="row">
+                          <input type="button" id="upload" value="上传" />
+                          <!--
+                              <input type="hidden" name="assignmentId" value="{$assignment.id}" id="assignmentId"/>
+                              <input type="hidden" name="userId" value="{$user.userId}" id="userId"/>
+                          -->
+                        </div>
+                        <div id="fileInfo">
+                          <div id="fileName"></div>
+                          <div id="fileSize"></div>
+                          <div id="fileType"></div>
+                        </div>
+                        <div class="row"></div>
+                        <div id="progressIndicator">
+                          <div id="progressBar" class="floatLeft"></div>
+                          <div id="progressNumber" class="floatRight"></div>
+                          <div class="clear"></div>
+                          <div>
+                            <!--上传速度信息，上传完成所需要时间信息暂时没有实现-->
+                            <!--
+                            <div id="transferSpeedInfo" class="floatLeft" style="width: 80px;"></div>
+                            <div id="timeRemainingInfo" class="floatLeft" style="margin-left: 10px;"></div>
+                            -->
+                            <div id="transferBytesInfo" class="floatRight" style="text-align: right;"></div>
+                            <div class="clear"></div>
+                          </div>
+                          <div id="uploadResponse">
+                          </div>
+                        </div>
+                      </form>
+</div>
+
+

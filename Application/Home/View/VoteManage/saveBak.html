@@ -1,0 +1,316 @@
+
+<style type="text/css">
+	.main_bd {
+    padding: 0 62px;
+    padding-top: 0px;
+    padding-right: 62px;
+    padding-bottom: 0px;
+    padding-left: 62px;
+}
+
+</style>
+<script type="text/javascript">
+
+	var questionData = {$questionData};
+
+	function checkForm(){
+		/*
+		var username=document.getElementById("username").value;
+		var nikename=document.getElementById("nikename").value;
+		var usernumber=document.getElementById("usernumber").value;
+		var sex=document.getElementById("sex").value;
+		var position=document.getElementById("position").value;
+		var description=document.getElementById("description").value;
+		var tel=document.getElementById("tel").value;
+		if(username==""){
+			document.getElementById("error").innerHTML="请填写用户名";
+			return false;
+		}else if(nikename==""){
+			document.getElementById("error").innerHTML="请填写姓名";
+			return false;
+		}else if (usernumber==""){
+			document.getElementById("error").innerHTML="请填写学号";
+			return false;
+		}else if (sex==""){
+			document.getElementById("error").innerHTML="请选择性别";
+			return false;
+		}else if (tel==""){
+			document.getElementById("error").innerHTML="请填写电话";
+			return false;
+		}else if (position==""){
+			document.getElementById("error").innerHTML="请填写职务";
+			return false;
+		}else if (description==""){
+			document.getElementById("error").innerHTML="请填写负责内容";
+			return false;
+		}
+		*/
+		return true;
+	}
+
+	$(document).ready(function(){
+			$("ul li:contains(投票管理)").addClass("active");
+
+			$('.form_date').datetimepicker({
+			    language:  'en',
+			    weekStart: 1,
+			    todayBtn:  1,
+				autoclose: 1,
+				todayHighlight: 1,
+				startView: 2,
+				minView: 1,
+				forceParse: 1,
+				initialDate:new Date(),
+				pickerPosition:'right'
+			});
+
+			$('#addQuestion').click(function(){
+				var q = questionData.length;
+				//alert(q);
+				questionData[q] = 2;
+
+				var html = '<tr><td><div id="question'+(q)+'" class="question" align=""><table>'
+							+	'<tr> <td>问题'+(q+1)+'</td></tr>'
+							+	'<tr>'
+								+	'<td><font color="red">*</font>标题：</td>'
+								+	'<td>'
+									+	'<input type="hidden" id="qusetions['+(q)+'][questonId]" name="questions['+(q)+'][questionId]" value="" />'
+									+	'<input type="text" id="questions['+(q)+'][title]"  name="questions['+(q)+'][title]" value=""  style="margin-top:5px;height:30px;width: 300px;" />'
+								+	'</td>'
+							+	'</tr>'
+							+	'<tr>'
+								+	'<td></td>'
+								+	'<td>'
+									+	'<input name="mode['+(q)+']" type="radio" value=0 checked />&nbsp;&nbsp;单选&nbsp;&nbsp;&nbsp;&nbsp;'
+									+	'<input name="mode['+(q)+']" type="radio" value=1 />&nbsp;&nbsp;多选 '
+								+	'</td>'
+							+	'</tr>'
+							+	'<tr>'
+								+	'<td><font color="red">*</font>选项1：</td>'
+								+	'<td>'
+									+	'<input type="hidden" id="questions['+(q)+'][options][0][optionId]" name="questions['+(q)+'][options][0][optionId]" value="" />'
+									+	'<input type="text" id="questions['+(q)+'][options][0][content]"  name="questions['+(q)+'][options][0][content]" value=""  style="margin-top:5px;height:30px;width: 300px;" />'
+								+	'</td>'
+							+	'</tr>'
+							+	'<tr>'
+								+	'<td><font color="red">*</font>选项2：</td>'
+								+	'<td>'
+									+	'<input type="hidden" id="questions['+(q)+'][options][1][optionId]" name="questions['+(q)+'][options][1][optionId]" value="" />'
+									+	'<input type="text" id="questions['+(q)+'][options][1][content]"  name="questions['+(q)+'][options][1][content]" value=""  style="margin-top:5px;height:30px;width: 300px;" />'
+								+	'</td>'
+							+	'</tr>'
+
+							+	'<tr class="addOpt" q='+(q)+' ><td><p >添加选项</p></td></tr></table>'
+						+	'</div></td></tr>';
+				//alert(html);
+				//console.log(html);
+				$(this).before(html);
+				Mylistener();
+				//alert('ok');
+			});
+
+			function Mylistener(){
+				$('.addOpt').click(function(){
+				//alert($(this).attr('q'));
+					var q =$(this).attr('q');
+					//alert(q);
+					
+					var html = '<tr>'
+								+	'<td><font color="red">*</font>选项'+(questionData[q]+1)+'：</td>'
+									+	'<td>'
+										+	'<input type="hidden" id="questions[' + q + '][options][' + questionData[q] + '][optionId]" name="questions[' + q + '][options][' + questionData[q] + '][optionId]" value="" />'
+										+	'<input type="text" id="questions[' + q + '][options][' + questionData[q] + '][content]"  name="questions[' + q + '][options][' + questionData[q] + '][content]" value=""  style="margin-top:5px;height:30px;width: 300px;" />'
+									+	'</td>'
+							+	'</tr>';
+					//alert(html);
+					questionData[q]++;
+					$(this).before(html);
+				});
+			}
+
+			Mylistener();
+
+			console.log($('#choose').val()+"1");
+			$("#choose").change(function(){
+			console.log($('#choose').val()+"2");
+		  	//alert($('#choose').val()+"8");
+			$.post("{:U('getData')}",
+		    {
+		      type:"studentInfo",
+		      userId:$('#choose').val()
+		    },
+		    function(data,status){
+		      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+		      if(status=='success'){
+		      	$("#userId").val(data['userId']);
+		      	$("#classId").val(data['classId']);
+		      	$("#username").val(data['username']);
+		      	$("#nikename").val(data['nikename']);
+		      	$("#usernumber").val(data['usernumber']);
+		      	$("#sex").val(data['sex']);
+		      	$("#position").val(data['position']);
+		      	$("#description").val(data['description']);
+		      	$("#tel").val(data['tel']);
+
+		      }
+		    },'json');
+		});
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		<if condition="($student.userId neq null) OR ($student.userId neq '')">
+			修改班委信息
+		<else /> 
+			添加班委
+		</if>
+		</div>
+		<form action="__CONTROLLER__/save" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+				<php>
+					//print_r($vote);
+				</php>
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+				<div class='main_bd' align="left">
+					<input type="hidden" id="voteId" name="voteId" value="{$vote.voteId }"/>
+					<div class ="vote">
+						<table align="">
+							<tr><td>
+							<div class="voteTitle">
+							<table>
+								<tr>
+									<td><font color="red">*</font>投票名称：</td>
+									<td><input type="text" id="title"  name="title" value="{$vote.title }"  style="margin-top:5px;height:30px;width: 300px;" /></td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>开始时间：</td>
+									<td>
+										<span class="controls input-append date form_date" style="margin-top:5px;height:30px;margin-right: 10px" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-link-format="yyyy-mm-dd hh:ii:ss">
+		                    				<input id="startTime" name="startTime" style="width:245px;height: 30px;" placeholder="起始日期" type="text" value="{$vote.startTime}"  >
+		                    				<span class="add-on" style="height:30px;"><i class="icon-remove glyphicon glyphicon-remove"></i></span>
+											<span class="add-on" style="height:30px;"><i class="icon-th glyphicon glyphicon-th"></i></span>
+		               					</span>
+		               				</td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>截止时间：</td>
+									<td>
+										<span class="controls input-append date form_date" style="margin-top:5px;height:30px;margin-right: 10px" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-link-format="yyyy-mm-dd hh:ii:ss">
+		                    				<input id="endTime" name="endTime" style="width:245px;height: 30px;" placeholder="截止日期" type="text" value="{$vote.endTime}"  >
+		                    				<span class="add-on" style="height:30px;"><i class="icon-remove glyphicon glyphicon-remove"></i></span>
+											<span class="add-on" style="height:30px;"><i class="icon-th glyphicon glyphicon-th"></i></span>
+		               					</span>
+		               				</td>
+								</tr>
+							</table></div></td></tr>
+							<tr><td>
+							<div id='question0' class="question"><table>
+								<tr> <td>问题1</td></tr>
+								<tr>
+									<td><font color="red">*</font>标题：</td>
+									<td>
+										<input type="hidden" id='qusetions[0][questonId]' name="questions[0][questionId]" value="{$vote.questions.0.questionId }" />
+										<input type="text" id="questions[0][title]"  name="questions[0][title]" value="{$vote.questions.0.title }"  style="margin-top:5px;height:30px;width: 300px;" />
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
+										<input name="mode[0]" type="radio" value=0 checked />&nbsp;&nbsp;单选&nbsp;&nbsp;&nbsp;&nbsp;
+										<input name="mode[0]" type="radio" value=1 />&nbsp;&nbsp;多选 
+									</td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>选项1：</td>
+									<td>
+										<input type="hidden" id='questions[0][options][0][optionId]' name="questions[0][options][0][optionId]" value="{$vote.questions.0.options.0.optionId }" />
+										<input type="text" id="questions[0][options][0][content]"  name="questions[0][options][0][content]" value="{$vote.questions.0.options.0.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+									</td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>选项2：</td>
+									<td>
+										<input type="hidden" id='questions[0][options][1][optionId]' name="questions[0][options][1][optionId]" value="{$vote.questions.0.options.1.optionId }" />
+										<input type="text" id="questions[0][options][1][content]"  name="questions[0][options][1][content]" value="{$vote.questions.0.options.1.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+									</td>
+								</tr>
+
+								<volist name="vote[questions][0][options]" id="vo" key='ko' offset="2">
+									<tr>
+										<td><font color="red">*</font>选项{$ko+1}：</td>
+										<td>
+											<input type="hidden" id='questions[0][options][{$ko+2}][optionId]' name="questions[0][options][{$ko+2}][optionId]" value="{$vo.optionId }" />
+											<input type="text" id="questions[0][options][{$ko+2}][content]"  name="questions[0][options][{$ko+2}][content]" value="{$vo.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+										</td>
+									</tr>
+								</volist>
+								<tr class='addOpt' q=0 ><td><p ><a>添加选项</a></p></td></tr>
+								</table>
+							</div></td></tr>
+							<volist name="vote[questions]" id="question" key='kq' offset="1">
+							<tr><td>
+								<div id='question{$kq}' class="question"><table>
+									<tr><td>问题{$kq+1}</td></tr>
+									<tr>
+										<td><font color="red">*</font>标题：</td>
+										<td>
+											<input type="hidden" id='qusetions[{$kq}][questonId]' name="questions[{$kq}][questionId]" value="{$question.questionId }" />
+											<input type="text" id="questions[{$kq}][title]"  name="questions[{$kq}][title]" value="{$question.title }"  style="margin-top:5px;height:30px;width: 300px;" />
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<input name="mode[{$kq}]" type="radio" value=0 checked />&nbsp;&nbsp;单选&nbsp;&nbsp;&nbsp;&nbsp;
+											<input name="mode[{$kq}]" type="radio" value=1 />&nbsp;&nbsp;多选 
+										</td>
+									</tr>
+									<tr>
+										<td><font color="red">*</font>选项1：</td>
+										<td>
+											<input type="hidden" id='questions[{$kq}][options][0][optionId]' name="questions[{$kq}][options][0][optionId]" value="{$question.options.0.optionId }" />
+											<input type="text" id="questions[{$kq}][options][0][content]"  name="questions[{$kq}][options][0][content]" value="{$question.options.0.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+										</td>
+									</tr>
+									<tr>
+										<td><font color="red">*</font>选项2：</td>
+										<td>
+											<input type="hidden" id='questions[{$kq+1}][options][1][optionId]' name="questions[{$kq}][options][1][optionId]" value="{$question.options.1.optionId }" />
+											<input type="text" id="questions[{$kq+1}][options][1][content]"  name="questions[{$kq}][options][1][content]" value="{$question.options.1.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+										</td>
+									</tr>
+
+									<volist name="question[options]" id="vo" key='ko' offset="2">
+										<tr>
+											<td><font color="red">*</font>选项{$ko+2}：</td>
+											<td>
+											<input type="hidden" id='questions[{$kq}][options][{$ko+1}][optionId]' name="questions[{$kq}][options][{$ko+1}][optionId]" value="{$vo.optionId }" />
+											<input type="text" id="questions[{$kq}][options][{$ko+1}][content]"  name="questions[{$kq}][options][{$ko+1}][content]" value="{$vo.content }"  style="margin-top:5px;height:30px;width: 300px;" />
+										</td>
+										</tr>
+									</volist>
+										<tr class='addOpt' q={$kq}><td><p >添加选项</p></td></tr>
+									</table>
+								</div></td></tr>
+							</volist>	
+						<tr id='addQuestion'><td><p><a>增加问题</a></p></td></tr>
+						</table>
+						<br/>
+						<table align="left">
+							
+						</table>
+						
+					</div>
+					<div class = 'votequestions'>
+						
+					</div>
+				</div>
+					<div align="left">
+						<input type="submit" class="btn btn-primary" value="保存"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div>
+			</div>
+		</form>
+</div>

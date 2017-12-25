@@ -1,0 +1,135 @@
+
+<script type="text/javascript">
+	function checkForm(){
+		var term=document.getElementById("term").value;
+		var subjectId=document.getElementById("subjectId").value;
+		var subjectCode=document.getElementById("subjectCode").value;
+		var subjectname=document.getElementById("subjectname").value;
+		var collegeId=document.getElementById("collegeId").value;
+		if(term==""){
+			document.getElementById("error").innerHTML="请选择学期";
+			return false;
+		}else if(subjectId==""){
+			document.getElementById("error").innerHTML="请选择课程";
+			return false;
+		}else if (subjectCode==""){
+			document.getElementById("error").innerHTML="请填写课程代码";
+			return false;
+		}else if (subjectname==""){
+			document.getElementById("error").innerHTML="请选择课程名称";
+			return false;
+		}else if (collegeId==""){
+			document.getElementById("error").innerHTML="请选择开课学院";
+			return false;
+		}
+		return true;
+	}
+	
+	$(document).ready(function(){
+			$("ul li:contains(课程信息管理)").addClass("active");
+			$("#subjectId").change(function(){
+			  	subjectId = $('#subjectId').val();
+			  	if(subjectId>0){
+				//alert(subjectId);
+				  	$.post("{:U('getData')}",
+				    {
+				      type:"subjectInfo",
+				      subjectId:$('#subjectId').val()
+				    },
+				    function(data,status){
+				      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+				      console.log(data);
+				      if(status=='success'){
+				      	$("#subjectCode").val(data['subjectCode']);
+				      	$("#subjectname").val(data['subjectname']);
+				      	$("#collegeId").val(data['collegeId']);
+				  		$("#subjectCode").attr('readonly',true);
+				      	$("#subjectname").attr('readonly',true);;
+				      	$("#collegeId").attr('disabled',true);
+				      }
+				    },'json');
+				  }else{
+				  	//alert(subjectId);
+				      	$("#subjectCode").val('');
+				      	$("#subjectname").val('');
+				      	$("#collegeId").val(0);
+				  		$("#subjectCode").attr('readonly',null);
+				      	$("#subjectname").attr('readonly',null);;
+				      	$("#collegeId").attr('disabled',null);;
+				  }
+				
+		});
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		添加课程
+		</div>
+		<form action="__CONTROLLER__/save" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+				<input type="hidden" id="userId" name="userId" value="{$student.userId }"/>
+				<input type="hidden" id="classId" name="classId" value="{$student.classId }"/>
+					<table align="center">
+						<tr>
+							<td><font color="red">*</font>请选择学期：</td>
+							<td>
+								<select id="term" name="term" style="width: 205px;">
+									<option value="" >请选择...</option>
+										<option value="1">第一学期</option>
+										<option value="2">第二学期</option>
+										<option value="3">第三学期</option>
+										<option value="4">第四学期</option>
+										<option value="5">第五学期</option>
+										<option value="6">第六学期</option>
+										<option value="7">第七学期</option>
+										<option value="8">第八学期</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><font color="red" value='0'>*</font>请选择课程：</td>
+							<td>
+								<select id="subjectId" name="subjectId" style="width: 205px;">
+									<option value="" selected="">请选择...</option>
+									<volist name="subjects" id="subject" key='k'>
+										<option value="{$subject.subjectId}" >
+										{$subject.subjectname}
+											</option>
+									</volist>
+										<option value="n">其他</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>课程编号：</td>
+							<td><input type="text" id="subjectCode"  name="subjectCode" style="margin-top:5px;height:30px;" readonly='false' /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>课程名称：</td>
+							<td><input type="text" id="subjectname"  name="subjectname" style="margin-top:5px;height:30px;" readonly /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>开课学院：</td>
+							<td>
+							<select id="collegeId" name="collegeId" style="width: 205px;" disabled="true">
+									<option value=""></option>
+									<volist name="colleges" id="college" key='k'>
+										<option value="{$college.collegeId}" >
+										{$college.collegename}
+											</option>
+									</volist>
+									<option value="0">其他</option>
+								</select>
+								</td>
+						</tr> 
+					</table>
+					<div align="center">
+						<input type="submit" class="btn btn-primary" value="保存"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div>
+			</div>
+		</form>
+</div>

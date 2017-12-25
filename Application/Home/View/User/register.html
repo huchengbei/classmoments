@@ -1,0 +1,142 @@
+ <html lang="zh">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班级圈管理系统登录</title>
+<link href="__PUBLIC__/bootstrap/css/bootstrap.css" rel="stylesheet">
+<link href="__PUBLIC__/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+<script src="__PUBLIC__/bootstrap/js/jQuery.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+	function checkForm() {
+		var username = document.getElementById("username").value;
+		var nikename = document.getElementById("nikename").value;
+		var password = document.getElementById("password").value;
+		var password2 = document.getElementById("password2").value;
+		var password = document.getElementById("password").value;
+		var userTypes = document.getElementsByName("userType");
+		var userType = null;
+		for(var i=0;i<userTypes.length;i++) {
+			if(userTypes[i].checked) {
+				userType=userTypes[i].value;
+				break;
+			}
+		}
+		if (username == null || username == "") {
+			document.getElementById("error").innerHTML = "用户名不能为空";
+			return false;
+		}
+		if (nikename == null || nikename == "") {
+			document.getElementById("error").innerHTML = "姓名不能为空";
+			return false;
+		}
+		if (password == null || password == "") {
+			document.getElementById("error").innerHTML = "密码不能为空";
+			return false;
+		}
+		if (password2 == null || password2 == "") {
+			document.getElementById("error").innerHTML = "密码不能为空";
+			return false;
+		}
+		
+		if (password!=password2){
+			document.getElementById("error").innerHTML = "两次密码不一样";
+			return false;
+		}
+		/*
+		if (userType == null || userType == "") {
+			document.getElementById("error").innerHTML = "请选择用户类型";
+			return false;
+		}
+		*/
+		return true;
+	}
+	function register() {
+		window.location.href='Home/User/register';
+	}
+</script>
+
+<style type="text/css">
+	  body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+        background-image: url('__PUBLIC__/images/bg.jpg');
+        background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+      }
+      
+      .radio {
+      	padding-top: 10px;
+       	padding-bottom:10px;
+      }
+      
+      .form-signin-heading{
+      	text-align: center;
+      }
+
+      .form-signin {
+        max-width: 300px;
+        padding: 19px 29px 0px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+</style>
+
+</head>
+<body>
+<div class="container">
+      <form name="myForm" class="form-signin" action="" method="post" onsubmit="return checkForm()">
+        <h2 class="form-signin-heading"><font color="gray">班  级  圈 注 册</font></h2>
+        <input id="username" name="username" value="" type="text" class="input-block-level" placeholder="用户名...">
+        <input id="nikename" name="nikename" value="" type="text" class="input-block-level" placeholder="姓名...">
+        <input id="password" name="password" value="" type="password" class="input-block-level" placeholder="密码..." >
+        <input id="password2" name="password2" value="" type="password" class="input-block-level" placeholder="再输入一次密码..." >
+       
+         <label class="radio inline">
+      	  	<input id="join" type="radio" name="type" value="join" onclick="joinform.style.display='';foundform.style.display='none';"  checked/> 加入一个班级
+		</label>
+		<label class="radio inline">
+			<input id="found" type="radio" name="type" value="found" onclick="foundform.style.display='';joinform.style.display='none';"} /> 创建一个班级
+		</label>
+		<div id='joinform'>
+			<input id="uniqueCode" name="uniqueCode" value="" type="text" class="input-block-level" placeholder="请输入班级惟一代码，可从班长处获取...">
+		</div>
+		<div id='foundform' style="display:none">
+			<input id="grade" name="grade" value="" type="text" class="input-block-level" placeholder="年级">
+			<input id="className" name="className" value="" type="text" class="input-block-level" placeholder="班级名称">
+		</div>
+
+       	<br/>
+        <label class="checkbox">
+          <input id="remember" name="remember" type="checkbox" value="remember-me" ${remember==1?'checked':''}>记住我 &nbsp;&nbsp;&nbsp;&nbsp; <font id="error" color="red">{$error }</font>  
+        </label>
+        <button class="btn btn-large btn-primary" type="submit">注册</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="btn btn-large btn-primary" type="reset" >重置</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href='__CONTROLLER__/login' >返回登录</a>
+
+		<p align="center" style="padding-top: 15px;">版权所有  2016  萧易桥  易水龙 风萧呆</p>
+      </form>
+</div>
+</body>
+</html>

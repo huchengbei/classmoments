@@ -1,0 +1,63 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	//alert(1);
+	$("ul li:eq(1)").addClass("active");
+	$('.datatable').dataTable( {        				
+		 "oLanguage": {
+				"sUrl": "/DormManage/media/zh_CN.json"
+		 },
+		"bLengthChange": false, //改变每页显示数据数量
+		"bFilter": false, //过滤功能
+		"aoColumns": [
+			null,
+			null,
+			null,
+			{ "asSorting": [ ] },
+			null,
+			{ "asSorting": [ ] },
+		]
+	});
+});
+
+
+window.onload = function(){ 
+	$("#DataTables_Table_0_wrapper .row-fluid").remove();
+};	
+</script>
+
+
+<div style="padding-left: 35px;padding-right: 50px;margin-top: 10px">
+	<font size='6' style="padding-right: 10px;padding-left: 10px;margin-top: 50px;">公告栏</font>
+	<if condition="($currentUserType eq 'monitor') OR ($currentUserType eq 'manager') ">
+			<button class="btn btn-success" type="button" style="margin-right: 50px;margin-left: 15px;margin-bottom: 15px" onclick="javascript:window.location='__CONTROLLER__/add'">添加</button>
+		</if>
+	
+	<div class="well" style="margin-top: 10px">
+		<volist name = 'notices' id = 'vo'>
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span12">
+						<div class="list-group">
+							<a href="#" class="list-group-item active">
+							{$vo.title}</a>
+							<div class="list-group-item">
+								{$vo.nikename}&nbsp;&nbsp;{$vo.createTime}&nbsp;&nbsp;
+							<if condition="($currentUserType eq 'monitor') OR ($currentUser[userId]) eq $vo[authorId] ">
+								<a href='__CONTROLLER__/edit?noticeId={$vo.noticeId}'>编辑</a>&nbsp;&nbsp;
+								<a href='__CONTROLLER__/delete?noticeId={$vo.noticeId}'>删除</a>
+							</if>
+							</div>
+							<div class="list-group-item">
+								<h4 class="list-group-item-heading">
+									{$vo.content}
+								</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</volist>
+
+	</div>
+</div>
+

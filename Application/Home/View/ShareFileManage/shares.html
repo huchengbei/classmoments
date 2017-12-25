@@ -1,0 +1,304 @@
+  <style type="text/css">
+  h1, h2, h3, h4 {
+    margin-top: 0px;
+  }
+  div.row {
+    margin-bottom: 10px;
+    padding: 5px 5px 5px 25px;
+  }
+  *.focus {
+    outline: none;
+  }
+  .floatLeft {
+    float: left;
+  }
+  .floatRight {
+    float: right;
+  }
+  .clear {
+    clear: both;
+  }
+  form {
+    padding: 20px;
+    padding-left: 50px;
+    width:400px;
+    margin:0px auto;
+    background-image:-moz-linear-gradient(top,#ffffff,#f2f2f2);
+    background-image:-webkit-gradient(linear,left top,bottom,from(#ffffff),to(#f2f2f2));
+  }
+  input {
+    border:1px solid #ccc;
+    font-size: 13pt;
+    padding: 0px 10px 5px 10px;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+  }
+  input[type=button] {
+    background-image: -moz-linear-gradient(top, #ffffff, #dfdfdf);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#dfdfdf));
+  }
+  input:focus {
+    -webkit-box-shadow:0 0 10px #ccc;
+    -moz-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 5px #ccc;
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+  #file {
+    width: 378px;
+  }
+  #progressIndicator {
+    font-size: 10pt;
+  }
+  #fileInfo {
+    font-size: 10pt;
+    font-style: italic;
+    color: #aaa;
+    margin-top: 10px;
+  }
+  #progressBar {
+    height: 14px;
+    border: 1px solid #cccccc;
+    display: none;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    background-image: -moz-linear-gradient(top, #66cc00, #4b9500);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#66cc00), to(#4b9500));
+    background-color: #4b9500;
+  }
+  #uploadResponse {
+    margin-top: 10px;
+    padding: 20px;
+    overflow: hidden;
+    display: none;
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px #ccc;
+    background-image: -moz-linear-gradient(top, #ff9900, #c77801);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ff9900), to(#c77801));
+    background-color: #ff9900;
+  }
+</style>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("ul li:contains(资源共享)").addClass("active");
+	$('#uploadModal').on('hidden.bs.modal', function () {
+      window.location.reload();
+   });
+	var files = document.getElementById("file"),
+        //不支持File API的浏览器调用该接口，预览上传文件信息
+        validUrl = '__MODULE__/Works/fileMessage',
+        //上传文件处理接口
+        uploadUrl = '__MODULE__/Works/upload',
+        //不支持File API的浏览器调用该接口，显示文件上传进度
+        progressUrl = '__MODULE__/Works/uploadProgress',
+        //上传按钮
+        upload = document.getElementById('upload'),
+        //上传进度条
+        progressBar = document.getElementById('progressBar'),
+        //上传百分比
+        progressNumber = document.getElementById('progressNumber'),
+        //已上传文件大小
+        transferBytesInfo = document.getElementById('transferBytesInfo'),
+        //服务器端处理结果
+        uploadResponse = document.getElementById('uploadResponse');
+      $('#file').change(function(name,size,type){
+        //file 对象
+        progressBar.style.display = 'none';
+        progressNumber.style.display = 'none';
+        transferBytesInfo.style.display = 'none';
+        uploadResponse.style.display = 'none';
+        
+        var file = files.files[0];  
+        //alert(f.name);
+        var name = file.name;
+        var size;
+        var type=file.type;
+        //预览上传文件信息 
+        if(file.size>1024*1024){
+          size=""+ (file.size/1024/1024).toFixed(2)+ "MB";
+        }else{
+          size=""+(file.size/1024).toFixed(2) +"KB";
+        }
+        $('#fileName').text('文件名：' + name);
+        $('#fileSize').text('文件大小：' + size);
+        $('#fileType').text('文件类型：' + type);
+        //alert(JSON.stringify(f));
+      });
+
+      $('#upload').click(function(){
+        progressBar.style.display = 'none';
+        progressNumber.style.display = 'none';
+        transferBytesInfo.style.display = 'none';
+        uploadResponse.style.display = 'none';
+
+        var file = files.files[0];
+
+        var fd = new FormData();
+        fd.append("file", file);
+        fd.append("description", $('#description').val());
+        // These extra params aren't necessary but show that you can include other data.
+        fd.append("accountnum", 123456);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '__CONTROLLER__/upload', true);
+        
+        xhr.upload.onprogress = function(e) {
+          if (e.lengthComputable) {
+            var percentComplete = Math.round(e.loaded * 10000 / e.total)/100;
+
+            progressBar.style.display = 'block';
+            progressNumber.style.display = 'block';
+            transferBytesInfo.style.display = 'block';
+            progressBar.style.width = '0px';
+            $('#progressNumber').text(percentComplete + '%');
+            progressBar.style.width = percentComplete * 3.55 + 'px';
+            $('#transferBytesInfo').text(args2);
+
+            console.log(percentComplete + '% uploaded');
+          }
+        };
+
+        xhr.onload = function() {
+          if (this.status == 200) {
+            var resp = JSON.parse(this.response);
+            //alert(JSON.stringify(JSON.parse(this.response)));
+            console.log('Server got:', resp);
+            //alert(resp.message);
+            $('#uploadResponse').html(resp.message);
+            uploadResponse.style.display = 'block';
+          };
+        };
+
+        xhr.send(fd);
+
+      });
+});
+
+
+window.onload = function(){ 
+	$("#DataTables_Table_0_wrapper .row-fluid").remove();
+};
+
+</script>
+<style type="text/css">
+	.span6 {
+		width:0px;
+		height: 0px;
+		padding-top: 0px;
+		padding-bottom: 0px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+
+</style>
+<div class="data_list">
+		<div class="data_list_title" style="height: 35px;margin-top: -10px">
+			文件共享&nbsp;&nbsp;&nbsp;
+		<button class="btn btn-success" type="button" style="margin-right: 50px;" data-toggle="modal" data-target="#uploadModal">添加</button>
+		</div>
+		<div>
+			<table class="table table-striped table-bordered table-hover datatable">
+				<thead>
+					<tr>
+					<th>序号</th>
+					<th>文件名</th>
+          <th>描述</th>
+          <th>共享人</th>
+					<th>文件大小</th>
+					<th>共享日期</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<volist name= "shareFiles" id = "file" key='k'>
+					<tr>
+						<td>{$k}</td>
+						<td>{$file.name}</td>
+            <td>{$file.description}</td>
+            <td>{$file.nikename}</td>
+						<td>{$file.size}</td>
+						<td>{$file.shareTime}</td>
+						<td>
+							<button class="btn btn-mini btn-info" type="button" onclick="javascript:window.location='__CONTROLLER__/down?shareId={$file.shareId}'">
+							下载
+							</button>&nbsp;
+							<if condition="($currentUserType eq 'monitor') OR ($currentUser[userId] eq $file[userId]) ">
+								<button class="btn btn-mini btn-danger" id='studentDelte' type="button" onclick=" var a=confirm('你确定要删除这个共享文件么？');if(a){window.location='__CONTROLLER__/delete?shareId={$file.shareId}'}">
+								删除
+								</button>
+							</if>
+						</td>
+					</tr>
+					</volist>
+				</tbody>
+			</table>
+		</div>
+    <div align="right" style="margin-top: -40px">
+      <div class="pagination">{$show}</div>
+      </div>
+		<div align="center"><font color="red">{$error }</font></div>
+</div>
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" 
+               aria-hidden="true">
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               选择共享文件
+            </h4>
+         </div>
+         <div class="modal-body">
+            <form id="form" enctype="multipart/form-data" method="post" action="__CONTROLLER__/upload">
+                <div class="row">
+                  <h4>描述</h4>
+                    <input id='description' type="text" name="description"/>
+                </div><div class="row">
+                    <input id='file' type="file" name="file"/>
+                </div>
+                <div id="fileInfo">
+                	<div id="fileName"></div>
+                	<div id="fileSize"></div>
+                	<div id="fileType"></div>
+                </div>
+                <div class="row"></div>
+                <div id="progressIndicator">
+                    <div id="progressBar" class="floatLeft"></div>
+                    <div id="progressNumber" class="floatRight"></div>
+                    <div class="clear"></div>
+                    <div>
+                            <!--上传速度信息，上传完成所需要时间信息暂时没有实现-->
+                            <!--
+                            <div id="transferSpeedInfo" class="floatLeft" style="width: 80px;"></div>
+                            <div id="timeRemainingInfo" class="floatLeft" style="margin-left: 10px;"></div>
+                            -->
+                        <div id="transferBytesInfo" class="floatRight" style="text-align: right;"></div>
+                        <div class="clear"></div>
+                    </div>
+                    <div id="uploadResponse">
+                    </div>
+                </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">
+               关闭
+            </button>
+            <button type="button" id='upload' class="btn btn-primary">
+               上传
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div>

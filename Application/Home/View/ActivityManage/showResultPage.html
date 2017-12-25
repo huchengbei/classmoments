@@ -1,0 +1,54 @@
+<style type="text/css">
+	.span6 {
+		width:0px;
+		height: 0px;
+		padding-top: 0px;
+		padding-bottom: 0px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+
+</style>
+<div class="data_list">
+		<div class="data_list_title">
+			{$activity.name} 活动详情
+		</div>
+		
+		<!--
+				<span class="data_search">
+					<span><font style="font-family: '黑体'; font-style: 'bold'; font-size: 20px" color="blue">${dormBuildName }&nbsp;&nbsp;</font></span>
+					<select id="searchType" name="searchType" style="width: 80px;">
+					<option value="name">姓名</option>
+					<option value="number" ${searchType eq "number"?'selected':'' }>学号</option>
+					<option value="dorm" ${searchType eq "dorm"?'selected':'' }>寝室</option>
+					</select>
+					&nbsp;<input id="s_studentText" name="s_studentText" type="text"  style="width:120px;height: 30px;" class="input-medium search-query" value="${s_studentText }">
+					&nbsp;<button type="submit" class="btn btn-info" onkeydown="if(event.keyCode==13) myForm.submit()">搜索</button>
+				</span>
+		-->
+		</form>
+		<div>
+			<table class="table table-striped table-bordered table-hover datatable">
+				<thead>
+					<tr>
+					<th>序号</th>
+					<volist name='activity[questions]' id ='question' key = 'k'>
+						<th>{$question.question}</th>
+					</volist>
+					</tr>
+				</thead>
+				<tbody>
+
+				<volist name= "activity[users]" id = "user" key='k'>
+					<tr>
+						<td>{$k}</td>
+						<volist name='user' id='content' key ='kc'>
+							<td>{$content}</td>
+						</volist>
+					</tr>
+				</volist>
+				</tbody>
+			</table>
+		</div>
+		<div align="center"><font color="red">{$error }</font></div>
+</div>

@@ -1,0 +1,89 @@
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("ul li:contains(作业管理)").addClass("active");
+	$('.datatable').dataTable( {        				
+		 "oLanguage": {
+				"sUrl": "/DormManage/media/zh_CN.json"
+		 },
+		"bLengthChange": false, //改变每页显示数据数量
+		"bFilter": false, //过滤功能
+		"aoColumns": [
+			null,
+			null,
+			null,
+			{ "asSorting": [ ] },
+			null,
+			{ "asSorting": [ ] },
+		]
+	});
+});
+
+
+window.onload = function(){ 
+	$("#DataTables_Table_0_wrapper .row-fluid").remove();
+};
+
+</script>
+<style type="text/css">
+	.span6 {
+		width:0px;
+		height: 0px;
+		padding-top: 0px;
+		padding-bottom: 0px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+
+</style>
+<div class="data_list">
+		<div class="data_list_title" style="height: 35px;margin-top: -10px">
+			{$worksMembers.0.title} 详情查看&nbsp;&nbsp;&nbsp;
+			<if condition="($currentUserType eq 'monitor') OR ($currentUser[userId] eq $worksMembers[0][authorId]) ">
+				<button class="btn btn-success" type="button" style="margin-right: 50px;" onclick="javascript:window.open('__CONTROLLER__/download?taskId={$worksMembers.0.taskId}')">打包下载</button>
+			</if>
+		</div>
+		
+		<div>
+			<table class="table table-striped table-bordered table-hover datatable">
+				<thead>
+					<tr>
+					<th>序号</th>
+					<th>学号</th>
+					<th>姓名</th>
+					<th>文件名</th>
+					<th>文件大小</th>
+					<th>上传时间</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<volist name= "worksMembers" id = "work" key='k'>
+					<tr>
+						<td>{$k}</td>
+						<td width="">{$work.usernumber}</td>
+						<td width="">{$work.nikename}</td>
+						<td width="">{$work.name}</td>
+						<td width="">{$work.size}</td>
+						<td width="">{$work.uploadTime}</td>
+						<td width="">
+						<if condition="($currentUser[userId] eq $work[userId]) OR ($currentUserType eq 'monitor') OR ($currentUser[userId] eq $worksMembers[0][authorId])">
+							<button class="btn btn-mini btn-danger" id='studentDelte' type="button" onclick=" var a=confirm('你确定要删除这个作业么？');if(a){window.location='__CONTROLLER__/deleteWork?recordId={$work.recordId}&fileId={$work.fileId}'}">
+							删除
+							</button>
+						<else />
+							已查阅
+						</if>
+						</td>
+					</tr>
+					</volist>
+				</tbody>
+			</table>
+		</div>
+		<div align="right" style="margin-top: -40px">
+			<div class="pagination">{$show}</div>
+			</div>
+		<div align="center"><font color="red">{$error }</font></div>
+</div>

@@ -1,0 +1,208 @@
+
+<script type="text/javascript" src="__PUBLIC__/echarts/echarts.min.js"></script>
+<style type="text/css">
+	.main_bd {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+			$("ul li:contains(成绩分析)").addClass("active");
+			//$('#main').hide();
+			$('#choose').change(function(){
+				var data1 = new Array();
+				var data2 = new Array();
+				
+				$.post("{:U('ScoreManage/getData')}",
+			    {
+			      type:"scoreInfo",
+			      userId:$('#choose').val()
+			    },
+			    function(data,status){
+			      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+			      if(status=='success'){
+			      	//console.log(data+status+$('#choose').val());
+			      	$.each(data,function(index,value){
+			      		data1.push(Math.round(value.avg*100)/100);
+			      		data2.push(value.rank);
+			      		//console.log(value.nikename);
+			      	});
+
+			      }
+			    },'json');
+			    console.log(option.series[0].data);
+			    console.log(data1);
+				option.series[0].data=data1;
+				option2.series[0].data=data2;
+				setTimeout('myChart1.setOption(option);myChart2.setOption(option2);',1000);
+			});
+	});
+			function refresh(){
+        
+        
+			}
+</script>
+<div class="data_list">
+		<div class="data_list_title" align="center">
+			<font size="5" style="line-height: 25px" >
+			<select id = 'choose' style="width: 180px">
+				<volist name="classMembers" id="classMember" key='k'>
+					<option value="{$classMember.userId}"
+						<if condition="$scoreAnalyse[0][userId] eq $classMember[userId]">
+							selected
+						</if>
+							 >{$classMember.usernumber } {$classMember.nikename }
+					</option>
+				</volist>
+			</select>成绩分析
+		</div>
+		<div class="data_form" >
+			<div align="center">
+				<font id="error" color="red">{$error }</font>
+			</div>
+			<div class='main_bd' align="left"><div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span6">
+				<div id="main1" align="left" style="width: 500px;height:400px;float: left">
+				</div>
+				</div>
+				<div class="span6">
+				<div id="main2" align="right" style="width: 500px;height:400px;float: right">
+					</div>
+				</div>
+			</div>
+			</div>
+			</div>
+			<!--
+			<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">
+				返回
+			</button>
+			-->
+		</div>
+</div>
+<script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart1 = echarts.init(document.getElementById('main1'));
+        var myChart2 = echarts.init(document.getElementById('main2'));
+
+        // 指定图表的配置项和数据
+       var option = {
+		    title: {
+		        text: '成绩均分走向'
+		    },
+		    tooltip: {
+		        trigger: 'axis'
+		    },
+		    legend: {
+		        data:['均分']
+		    },
+		    grid: {
+		        left: '3%',
+		        right: '4%',
+		        bottom: '3%',
+		        containLabel: true
+		    },
+		    toolbox: {
+		        feature: {
+		            saveAsImage: {}
+		        }
+		    },
+		    xAxis: {
+		        type: 'category',
+		        boundaryGap: false,
+		        data: [
+		        <volist name = "scoreAnalyse" id = "term">
+		        	'第{$term.term}学期',
+		        </volist>
+		        ]
+		    },
+		    yAxis: [
+                {
+            type: 'value',
+            name: '均分',
+            min: 0,
+            max: 100,
+            interval: 20,
+            axisLabel: {
+                formatter: '{value}'
+            }
+        }
+            ],
+		    series: [
+		        {
+		            name:'均分',
+		            type:'line',
+		            tiled: '总量',
+		            //加上areaStyle: {normal: {}},可显示面积视图
+            
+		            data:[
+		        <volist name = "scoreAnalyse" id = "term">
+		        	{$term.avg},
+		        </volist>
+		        ]
+		        }
+		    ]
+		};
+var option2 = {
+		    title: {
+		        text: '班级排名走向'
+		    },
+		    tooltip: {
+		        trigger: 'axis'
+		    },
+		    legend: {
+		        data:['名次']
+		    },
+		    grid: {
+		        left: '3%',
+		        right: '4%',
+		        bottom: '3%',
+		        containLabel: true
+		    },
+		    toolbox: {
+		        feature: {
+		            saveAsImage: {}
+		        }
+		    },
+		    xAxis: {
+		        type: 'category',
+		        boundaryGap: false,
+		        data: [
+		        <volist name = "scoreAnalyse" id = "term">
+		        	'第{$term.term}学期',
+		        </volist>
+		        ]
+		    },
+		    yAxis: [
+        {
+            type: 'value',
+            name: '名次',
+            min: 0,
+            max: 55,
+            interval: 10,
+            axisLabel: {
+                formatter: '{value} '
+            }
+        }
+            ],
+		    series: [
+		        {
+		            name:'名次',
+		            type:'line',
+		            tiled: '总量',
+		            data:[
+		        <volist name = "scoreAnalyse" id = "term">
+		        	{$term.rank},
+		        </volist>
+		        ]
+		        },
+		    ]
+		};
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart1.setOption(option);
+        myChart2.setOption(option2);
+    </script>

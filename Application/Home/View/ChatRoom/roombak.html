@@ -1,0 +1,119 @@
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("ul li:contains(聊天室)").addClass("active");
+	//alert(0);
+	getMsg();
+
+	$('#btn').click(function(){
+
+		var message=$('#msg').val();
+		if(message==''||message==null){
+			return;
+		}
+		//alert(message);
+		var date = new Date();
+	    var seperator1 = "-";
+	    var seperator2 = ":";
+	    var month = date.getMonth() + 1;
+	    var strDate = date.getDate();
+	    if (month >= 1 && month <= 9) {
+	        month = "0" + month;
+	    }
+	    if (strDate >= 0 && strDate <= 9) {
+	        strDate = "0" + strDate;
+	    }
+	    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+	            + " " + date.getHours() + seperator2 + date.getMinutes()
+	            + seperator2 + date.getSeconds();
+
+	    var con = "<div><font color='gray'>&nbsp;&nbsp;{$currentUser.nikename} &nbsp;&nbsp;"+currentdate+'</font> : '+'</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+$('#msg').val()+'</br></div>';
+        
+        $('#contents').append(con);
+
+		$.post("{:U('ChatRoom/sendMsg')}",{
+            'content' : $('#msg').val()
+            },function(response){
+                if(response['status'] == 1){
+	                $('#res').html('发送成功！').show().hide(3000);
+	                $('#msg').val('');
+                }else{
+                    $('#res').html('发送失败！').show().hide(3000);
+                }
+            },'json');
+
+    });
+
+	//getMsg();
+    window.setInterval("getMsg()",1000);
+
+	
+
+});
+
+function getMsg(){
+            
+            $.post("{:U('ChatRoom/getMsg')}",
+		    {
+                'classId' : {$currentUser.classId}
+		    },
+		    function(data,status){
+		      //alert("Data: " + data['userId'] + "\nStatus: " + status);
+		      var con='';
+		      if(status=='success'){
+		      	$.each(data,function(index,value){
+                    con +="<div id ='navbar"+index+"'><font color='gray'>&nbsp;&nbsp;" + value.nikename + '&nbsp;&nbsp; ' + value.createTime+'</font> : '+'</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+value.content+'</br></div>';
+		      		//alert(con);
+                });
+		      	//alert(con);
+		      	con += "<div id ='navbar-example'> </div>";
+		      	$('#contents').html(con);
+		      	$("#contents").scrollspy();
+		      	$('[data-spy="scroll"]').each(function () {
+          			var $spy = $(this).scrollspy('refresh')
+      			});
+		      	$('#contents').scrollspy({ target:'#navbar10' });
+		      	$('#navbar10').show();
+		      	//window.location.href = window.location.pathname +"#navbar-example";
+		      	//alert(window.location.pathname);
+		      }
+		    },'json');
+        }
+</script>
+<style type="text/css">
+	.span7 {
+		width:0px;
+		height: 0px;
+		padding-top: 0px;
+		padding-bottom: 0px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+	span {
+            color:red;
+        }
+
+    #msg {
+            width:400px;
+        }
+
+    #contents {
+            width: 450px;
+            border: 1px solid #ccc;
+        }
+
+</style>
+<div class="data_list" style="width: 480px">
+		<div class="data_list_title">
+			聊天室
+		</div>
+		<div>
+			<div id="contents" class='example'  data-spy="scroll" data-target="#navbar-example" style="height:400px;overflow-y: scroll; position: relative;" data-offset='30' ></div>
+    <p></p>
+    <input type="hidden" name="classId" value="{$currentUser.classId}" id="classId" />
+    <input type="text" name="msg" id="msg" />
+    <input type="button" value="发送" id="btn" />
+    <div id="res"></div>
+		</div>
+		<div align="center"><font color="red">{$error }</font></div>
+</div>

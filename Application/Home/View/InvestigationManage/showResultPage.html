@@ -1,0 +1,158 @@
+
+<script type="text/javascript" src="__PUBLIC__/echarts/echarts.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+			$("ul li:contains(问卷调查)").addClass("active");
+			$('.panel-collapse').toggle();
+			//$('#main').hide();
+
+			$('.form_date').datetimepicker({
+			    language:  'en',
+			    weekStart: 1,
+			    todayBtn:  1,
+				autoclose: 1,
+				todayHighlight: 1,
+				startView: 2,
+				minView: 1,
+				forceParse: 1,
+				initialDate:new Date(),
+				pickerPosition:'right'
+			});
+
+			$('.panel-title').click(function(){
+					var idname = '#'+$(this).attr('qid');
+					var qname = $(this).attr('qname')
+					$('.panel-collapse').hide();
+					//alert(idname);
+					$(idname).toggle();
+					var data = new Array();
+					var data1 = new Array();
+					$(idname+" div:eq(0) table:eq(0) tbody:eq(0) tr").each(function(index,element){
+							//alert($(ele).text());
+						record = new Object();
+						$(element).contents().filter('td').each(function(ind,ele){
+							if(ind==0){
+								record.name = $(ele).text();
+								data1[index] = $(ele).text();
+							}else if(ind ==1){
+								record.value = $(ele).text();
+							}
+						});
+						data[index]=record;
+					});
+					data.pop();
+					data1.pop();
+					option.series[0].data=data;
+					option.legend.data=data1;
+					option.title.text=qname;
+        			myChart.setOption(option);
+					//alert(data[0]['name']);
+				});
+			
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title" align="center">
+			<font size="5" style="line-height: 25px" >
+			{$investigation.title}调查结果
+			<br/>
+			<font color="gray" size="2">{$investigation.startTime}&nbsp;&nbsp;-&nbsp;&nbsp;{$investigation.endTime}</font>
+		</div>
+		<div class="data_form">
+			<div class="row-fluid">
+				<div class="span6" style="float: left;">
+				<div class ="investigation panel-group" id="accordion">
+					<table class="table table-condensed">
+						<volist name="investigation[questions]" id="question" key='kq'>
+						<tr><td>
+							<div class="question panel panel-default">
+								<div  class="panel-heading">
+									<h4 class="panel-title" qid='question{$kq-1}' qname = "{$question.title }">
+										<a data-parent="#accordion">
+											第{$kq}题：{$question.title }&nbsp;&nbsp;&nbsp;&nbsp;
+												<if condition="$question[mode] eq 0">
+													[单选题]
+												<else />
+													[多选题]
+												</if>
+										</a>
+									</h4>
+								</div>
+								<div id="question{$kq-1}" class="panel-collapse collapse in">
+									<div class="panel-body">
+									<table class="table">
+									   <thead>
+									      <tr>
+									         <th>选项</th>
+									         <th>小计</th>
+									         <th>比例</th>
+									      </tr>
+									   </thead>
+									   <tbody>
+										<volist name="question[options]" id="vo" key='ko'>
+									      <tr>
+									         <td>{$vo.content }</td>
+									         <td>{$vo.num}</td>
+									         <td>{$vo[num]*100/$investigation[num] |round=###,2}%</td>
+									      </tr>
+										</volist>
+										<tr>
+											<td>本题有效填写人次</td>
+											<td>{$investigation[num]}</td>
+											<td></td>
+										</tr>
+									   </tbody>
+									</table>
+									</div>
+								</div>
+							</div>
+						</td></tr>
+						</volist>
+					</table>
+				</div>
+				</div>
+				<div class="span6" style="float: right;">
+				<div id="main" align="right" style="width: 470px;height:400px;">
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+       var option = {
+			    title : {
+			        text: '点击问题查看结果',
+			        subtext: '',//副标题
+			        x:'center'
+			    },
+			    tooltip : {
+			        trigger: 'item',
+			        formatter: "{a} <br/>{b} : {c} ({d}%)"
+			    },
+			    legend: {
+			        orient: 'vertical',
+			        left: 'left',
+			        data: []
+			    },
+			    series : [
+			        {
+			            name: '',
+			            type: 'pie',
+			            roseType: 'angle',
+			            radius : '55%',
+			            center: ['50%', '60%'],
+			            data:[
+			                {}
+			            ],
+			        }
+			    ]
+			};
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>

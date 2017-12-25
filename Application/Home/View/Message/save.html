@@ -1,0 +1,54 @@
+
+<script type="text/javascript">
+	function checkForm(){
+		var username=document.getElementById("title").value;
+		var nikename=document.getElementById("content").value;
+		if(username==""){
+			document.getElementById("error").innerHTML="请填写标题";
+			return false;
+		}else if(nikename==""){
+			document.getElementById("error").innerHTML="请填写内容";
+			return false;
+		}
+		return true;
+	}
+	
+	$(document).ready(function(){
+		$("ul li:contains(留言板)").addClass("active");
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		<if condition="($message.messageId neq null) OR ($message.messageId neq '')">
+			修改心情
+		<else /> 
+			添加心情
+		</if>
+		</div>
+		<form action="__CONTROLLER__/save" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+			<php>//print_r($message);</php>
+				<input type="hidden" id="messageId" name="messageId" value="{$message.messageId }"/>
+					<table align="center"  >
+						<tr >
+
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+							<td><font color="red">*</font>标题：</td>
+							<td><input type="text" id="title"  name="title" value="{$message.title }"  style="margin-top:5px;height:30px;width: 400px;" /></td>
+						</tr>
+						<tr>
+							<td><font color="red">*</font>内容：</td>
+							<td>
+								<textarea id="content" name=content cols="30" rows="10" style="width: 400px;">{$message.content }</textarea>
+							</td>
+						</tr>
+					</table>
+					<div align="center">
+						<input type="submit" class="btn btn-primary" value="保存"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div>
+			</div>
+		</form>
+</div>

@@ -1,0 +1,197 @@
+
+<script type="text/javascript">
+
+	var qnum = {$qnum};
+
+	function checkForm(){
+		/*
+		var username=document.getElementById("username").value;
+		var nikename=document.getElementById("nikename").value;
+		var usernumber=document.getElementById("usernumber").value;
+		var sex=document.getElementById("sex").value;
+		var position=document.getElementById("position").value;
+		var description=document.getElementById("description").value;
+		var tel=document.getElementById("tel").value;
+		if(username==""){
+			document.getElementById("error").innerHTML="请填写用户名";
+			return false;
+		}else if(nikename==""){
+			document.getElementById("error").innerHTML="请填写姓名";
+			return false;
+		}
+		*/
+		return true;
+	}
+
+	$(document).ready(function(){
+			$("ul li:contains(活动管理)").addClass("active");
+
+			$('.form_date').datetimepicker({
+			    language:  'en',
+			    weekStart: 1,
+			    todayBtn:  1,
+				autoclose: 1,
+				todayHighlight: 1,
+				startView: 2,
+				minView: 1,
+				forceParse: 1,
+				initialDate:new Date(),
+				pickerPosition:'right'
+			});
+
+			function Mylistener(){
+				$('#addQuestion').click(function(){
+				//alert($(this).attr('q'));
+					//alert('q');
+					
+					var html = '<tr><td>'
+							+	'<div class="question  panel panel-default">'
+								+	'<div class="panel-heading">'
+								    +  '<h4 class="panel-title">'
+								    +   '<a data-toggle="collapse" data-parent="#accordion" href="#question' + qnum +'">'
+								    +     '信息'+(qnum + 1)
+								    +    '</a>'
+								    +  '</h4>'
+								+    '</div>'
+							+    '<div id="question' + qnum +'" class="panel-collapse collapse in">'
+      							+	'<div class="panel-body">'
+      							+	'<table>'
+								+	'<tr>'
+									+	'<td><font color="red">*</font>信息：</td>'
+									+	'<td>'
+										+	'<input type="hidden" id="qusetions['+qnum +'][questonId]" name="questions['+qnum +'][questionId]" value="" />'
+										+	'<input type="text" id="questions['+qnum +'][question]"  name="questions['+qnum +'][question]" value=""  style="margin-top:5px;height:30px;width: 300px;" />'
+									+	'</td>'
+								+	'</tr>'
+								+	'</table>'
+								+'</div></div>'
+							+	'</div></td></tr>';
+					//console.log(html);
+					qnum ++;
+					$(this).before(html);
+				});
+			}
+
+			Mylistener();
+
+	});
+</script>
+<div class="data_list">
+		<div class="data_list_title">
+		<if condition="($activity.activityId neq null) OR ($activity.activityId neq '')">
+			修改活动信息
+		<else /> 
+			添加活动
+		</if>
+		</div>
+		<form action="__CONTROLLER__/save" method="post" onsubmit="return checkForm()">
+			<div class="data_form" >
+				<php>
+					//print_r($activity);
+				</php>
+					<div align="center">
+						<font id="error" color="red">{$error }</font>
+					</div>
+				<div class='main_bd' align="center">
+					<input type="hidden" id="activityId" name="activityId" value="{$activity.activityId }"/>
+					<div class ="activity">
+						<table align="">
+							<tr><td>
+							<div class="activityName panel-group" id="accordion">
+							<table>
+								<tr>
+									<td><font color="red">*</font>活动名称：</td>
+									<td><input type="text" id="name"  name="name" value="{$activity.name }"  style="margin-top:5px;height:30px;width: 300px;" /></td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>描述：</td>
+									<td><input type="text" id="description"  name="description" value="{$activity.description }"  style="margin-top:5px;height:30px;width: 300px;" /></td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>开始时间：</td>
+									<td>
+										<span class="controls input-append date form_date" style="margin-top:5px;height:30px;margin-right: 10px" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-link-format="yyyy-mm-dd hh:ii:ss">
+		                    				<input id="startTime" name="startTime" style="width:245px;height: 30px;" placeholder="起始日期" type="text" value="{$activity.startTime}"  >
+		                    				<span class="add-on" style="height:30px;"><i class="icon-remove glyphicon glyphicon-remove"></i></span>
+											<span class="add-on" style="height:30px;"><i class="icon-th glyphicon glyphicon-th"></i></span>
+		               					</span>
+		               				</td>
+								</tr>
+								<tr>
+									<td><font color="red">*</font>截止时间：</td>
+									<td>
+										<span class="controls input-append date form_date" style="margin-top:5px;height:30px;margin-right: 10px" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-link-format="yyyy-mm-dd hh:ii:ss">
+		                    				<input id="endTime" name="endTime" style="width:245px;height: 30px;" placeholder="截止日期" type="text" value="{$activity.endTime}"  >
+		                    				<span class="add-on" style="height:30px;"><i class="icon-remove glyphicon glyphicon-remove"></i></span>
+											<span class="add-on" style="height:30px;"><i class="icon-th glyphicon glyphicon-th"></i></span>
+		               					</span>
+		               				</td>
+								</tr>
+							</table></div></td></tr>
+							<tr><td>
+							<div class="question panel panel-default">
+								<div class="panel-heading">
+							      <h4 class="panel-title">
+							        <a data-toggle="collapse" data-parent="#accordion" 
+							          href="#question0">
+							          信息1
+							        </a>
+							      </h4>
+							    </div>
+							    <div id="question0" class="panel-collapse collapse in">
+      								<div class="panel-body">
+										<table>
+										<tr>
+											<td><font color="red">*</font>信息：</td>
+											<td>
+												<input type="hidden" id='qusetions[0][questonId]' name="questions[0][questionId]" value="{$activity.questions.0.questionId }" />
+												<input type="text" id="questions[0][question]"  name="questions[0][question]" value="{$activity.questions.0.question }"  style="margin-top:5px;height:30px;width: 300px;" />
+											</td>
+										</tr>
+										</table>
+							      </div>
+							    </div>
+							</div></td></tr>
+							<volist name='activity[questions]' id ='question' key = 'k' offset='1'>
+								<tr><td>
+									<div class="question panel panel-default">
+									<div class="panel-heading">
+								      <h4 class="panel-title">
+								        <a data-toggle="collapse" data-parent="#accordion" 
+								          href="#question{$k}">
+								          信息{$k}
+								        </a>
+								      </h4>
+								    </div>
+								    <div id="question{$k}" class="panel-collapse collapse">
+	      								<div class="panel-body">
+										<table>
+										<tr>
+											<td><font color="red">*</font>信息：</td>
+											<td>
+												<input type="hidden" id='qusetions[{$k}][questonId]' name="questions[{$k}][questionId]" value="{$question.questionId }" />
+												<input type="text" id="questions[{$k}][question]"  name="questions[{$k}][question]" value="{$question.question }"  style="margin-top:5px;height:30px;width: 300px;" />
+											</td>
+										</tr>
+										</table>
+										</div>
+									</div>
+								</div></td></tr>
+							</volist>
+						<tr id='addQuestion'><td><p><a>增加问题</a></p></td></tr>
+						<tr><td colspan="2">
+					<div align="center">
+						<input type="submit" class="btn btn-primary" value="保存"/>
+						&nbsp;<button class="btn btn-primary" type="button" onclick="javascript:window.location='__CONTROLLER__/lists'">返回</button>
+					</div></td></tr>
+						</table>
+						<br/>
+						<table align="left">
+							
+						</table>
+						
+					</div>
+				</div>
+			</div>
+		</form>
+</div>
